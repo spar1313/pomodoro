@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .timer {
+            font-size: 3em;
+            margin: 20px 0;
+        }
+        .settings {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="timer" class="timer"></div>
+    <div id="settings" class="settings">
+        <label for="work-duration">Work Duration:</label>
+        <input type="number" id="work-duration" value="25"> minutes
+        <br>
+        <label for="break-duration">Break Duration:</label>
+        <input type="number" id="break-duration" value="5"> minutes
+    </div>
+    <div id="session-counter"></div>
+    <div>
+        <button id="start-pause">Start</button>
+        <button id="reset">Reset</button>
+    </div>
+
+    <script>
+        let workDurationInput = document.getElementById('work-duration');
+        let breakDurationInput = document.getElementById('break-duration');
+        let timerDisplay = document.getElementById('timer');
+        let sessionCounter = document.getElementById('session-counter');
+        let startPauseButton = document.getElementById('start-pause');
+        let resetButton = document.getElementById('reset');
+
+        let workDuration = workDurationInput.value * 60;
+        let breakDuration = breakDurationInput.value * 60;
+        let isRunning = false;
+        let timeLeft = workDuration;
+        let sessionCount = 0;
+        let interval;
+
+        function updateTimerDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function startPauseTimer() {
+            if (isRunning) {
+                clearInterval(interval);
+                startPauseButton.textContent = 'Start';
+            } else {
+                interval = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft < 0) {
+                        if (sessionCount % 2 === 0) {
+                            timeLeft = breakDuration;
+                        } else {
+                            timeLeft = workDuration;
+                        }
+                        sessionCount++;
+                        sessionCounter.textContent = `Completed Sessions: ${sessionCount}`;
+                    }
+                    updateTimerDisplay();
+                }, 1000);
+                startPauseButton.textContent = 'Pause';
+            }
+            isRunning = !isRunning;
+        }
+
+        function resetTimer() {
+            clearInterval(interval);
+            isRunning = false;
+            startPauseButton.textContent = 'Start';
+            workDuration = workDurationInput.value * 60;
+            breakDuration = breakDurationInput.value * 60;
+            timeLeft = workDuration;
+            sessionCount = 0;
+            sessionCounter.textContent = `Completed Sessions: ${sessionCount}`;
+            updateTimerDisplay();
+        }
+
+        startPauseButton.addEventListener('click', startPauseTimer);
+        resetButton.addEventListener('click', resetTimer);
+
+        updateTimerDisplay();
+    </script>
+</body>
+</html>
