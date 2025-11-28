@@ -1,1 +1,1 @@
-Pomodoro Tim
+Pomodoro Timer
